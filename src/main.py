@@ -34,7 +34,7 @@ state = GameState.BEGINNING  # This is true only at the start of the program
 tiles = []
 frames = 0
 
-waiting_for_pattern = False
+waiting_for_pattern = False  # This is completely unused for now
 pattern_to_check_index = 0
 moves_so_far: List[Color] = []
 
