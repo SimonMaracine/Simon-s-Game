@@ -102,7 +102,7 @@ def show_next_move():
     waiting_for_pattern = True
 
 
-def press(color: Color) -> bool:
+def press(color: Color):
     global pattern_to_check_index, waiting_for_pattern, state, level, error_background
 
     if state == GameState.IN_GAME:  # Ensure not playing when it's not started
@@ -113,11 +113,9 @@ def press(color: Color) -> bool:
                 waiting_for_pattern = False
                 Timer(0.7, show_next_move).start()
                 level += 1
-            return True
         else:
             state = GameState.GAME_OVER
             blink_red()
-            return False
 
 
 def blink_red():
