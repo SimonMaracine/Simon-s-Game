@@ -32,7 +32,7 @@ error_background = 0  # 0 red
 level = 0
 state = GameState.BEGINNING  # This is true only at the start of the program
 tiles = []
-frames = 0
+frames = 0  # This is completely unused for now
 
 waiting_for_pattern = False  # This is completely unused for now
 pattern_to_check_index = 0
