@@ -96,7 +96,7 @@ def show_next_move():
 
 
 def press(color: Color):
-    global pattern_to_check_index, state, level, error_background
+    global pattern_to_check_index, state, level
 
     if state == GameState.IN_GAME:  # Ensure not playing when it's not started
         try:
