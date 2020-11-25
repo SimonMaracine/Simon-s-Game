@@ -3,5 +3,6 @@
 /env
 /dist
 __pycache__
-Simon's-Game.spec
+Simon\'s-Game.spec
+Simon\\'s-Game.spec
 Simon's-Game
