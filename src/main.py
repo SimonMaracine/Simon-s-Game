@@ -17,7 +17,7 @@ clock: Optional[pygame.time.Clock] = None
 class Color(Enum):
     GREEN = (0, 200, 0)
     RED = (200, 0, 0)
-    YELLOW = (200, 200, 0)
+    YELLOW = (190, 190, 0)
     PURPLE = (128, 0, 128)
 
 
@@ -142,7 +142,6 @@ def main():
     font = pygame.font.SysFont("", 60, True)
     begin_instructions = font.render("Press Any Key To Begin", True, (255, 255, 255))
     restart_instructions = font.render("Press Any Key To Restart", True, (255, 255, 255))
-    game_over_text = font.render("Game Over", True, (255, 255, 255))
 
     while running:
         for event in pygame.event.get():
@@ -167,12 +166,11 @@ def main():
 
         if state == GameState.BEGINNING:
             window.blit(begin_instructions, (WIDTH // 2 - begin_instructions.get_width() // 2, 65))
-
-        if state == GameState.IN_GAME:
+        elif state == GameState.IN_GAME:
             level_text = font.render(f"Level {level}", True, (255, 255, 255))
             window.blit(level_text, (WIDTH // 2 - level_text.get_width() // 2, 65))
-
-        if state == GameState.GAME_OVER:
+        elif state == GameState.GAME_OVER:
+            game_over_text = font.render(f"Game Over, Level {level}", True, (255, 255, 255))
             window.blit(game_over_text, (WIDTH // 2 - game_over_text.get_width() // 2, 40))
             window.blit(restart_instructions, (WIDTH // 2 - restart_instructions.get_width() // 2, 90))
 
