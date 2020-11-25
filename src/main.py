@@ -27,14 +27,12 @@ class GameState(Enum):
     GAME_OVER = auto()
 
 
-error_background = 0  # 0 red
+error_background = 0  # The amount of red
 
 level = 0
 state = GameState.BEGINNING  # This is true only at the start of the program
 tiles = []
-frames = 0
 
-waiting_for_pattern = False  # This is completely unused for now
 pattern_to_check_index = 0
 moves_so_far: List[Color] = []
 
@@ -59,11 +57,8 @@ class Tile:
         color = (min(self.color[0] + self.white_color, 255),
                  min(self.color[1] + self.white_color, 255),
                  min(self.color[2] + self.white_color, 255))
-        pygame.draw.rect(surface, color, (self.x, self.y, self.width, self.width))
-        pygame.draw.line(surface, (0, 0, 0), (self.x, self.y), (self.x + self.width, self.y), 6)
-        pygame.draw.line(surface, (0, 0, 0), (self.x + self.width, self.y), (self.x + self.width, self.y + self.width), 6)
-        pygame.draw.line(surface, (0, 0, 0), (self.x, self.y + self.width), (self.x + self.width, self.y + self.width), 6)
-        pygame.draw.line(surface, (0, 0, 0), (self.x, self.y), (self.x, self.y + self.width), 6)
+        pygame.draw.rect(surface, color, (self.x, self.y, self.width, self.width), 0, 40)
+        pygame.draw.rect(surface, (0, 0, 0), (self.x, self.y, self.width, self.width), 6, 40)
 
     def press(self, pos: tuple):
         if self.x + self.width > pos[0] > self.x and \
@@ -81,7 +76,7 @@ class Tile:
 
 
 def start():  # Or "restart"
-    global waiting_for_pattern, pattern_to_check_index, state, level
+    global pattern_to_check_index, state, level
 
     state = GameState.IN_GAME
     moves_so_far.clear()
@@ -89,28 +84,30 @@ def start():  # Or "restart"
     level = 0
 
     Timer(0.7, show_next_move).start()
-    waiting_for_pattern = True
 
 
 def show_next_move():
-    global waiting_for_pattern, pattern_to_check_index
+    global pattern_to_check_index
 
+    pattern_to_check_index = 0
     tile = choice(tiles)
     moves_so_far.append(tile.color)
     tile.play()
-    pattern_to_check_index = 0
-    waiting_for_pattern = True
 
 
 def press(color: Color):
-    global pattern_to_check_index, waiting_for_pattern, state, level, error_background
+    global pattern_to_check_index, state, level, error_background
 
     if state == GameState.IN_GAME:  # Ensure not playing when it's not started
-        if color == moves_so_far[pattern_to_check_index]:
+        try:
+            got_it_right = color == moves_so_far[pattern_to_check_index]
+        except IndexError:  # This happens when trying to press when it's not ready yet
+            return
+
+        if got_it_right:
             pattern_to_check_index += 1
 
             if pattern_to_check_index == len(moves_so_far):
-                waiting_for_pattern = False
                 Timer(0.7, show_next_move).start()
                 level += 1
         else:
@@ -124,9 +121,11 @@ def blink_red():
 
 
 def main():
-    global running, window, clock, frames, error_background
+    global running, window, clock, error_background
 
-    pygame.init()
+    pygame.display.init()
+    pygame.font.init()
+    pygame.mixer.init()
     window = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Simon's Game")
     clock = pygame.time.Clock()
@@ -177,12 +176,9 @@ def main():
             window.blit(game_over_text, (WIDTH // 2 - game_over_text.get_width() // 2, 40))
             window.blit(restart_instructions, (WIDTH // 2 - restart_instructions.get_width() // 2, 90))
 
-        pygame.display.flip()
-        clock.tick(60)
-        frames += 1
-        if frames == 10_000:
-            frames = 0
-
         if error_background > 0:
             error_background -= 10
             error_background = max(error_background, 0)  # Clamp to 0
+
+        pygame.display.flip()
+        clock.tick(60)
