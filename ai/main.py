@@ -83,7 +83,7 @@ def main():
     global mouse, state, level_reached
 
     sct = mss.mss()
-    monitor = {"top": 0, "left": 0, "width": 1600, "height": 900}
+    monitor = {"top": 0, "left": 0, "width": 1600, "height": 900}  # TODO detect monitor size
     print(f"Screen coordinates checked: {monitor}")
 
     window_pos = get_window_position(get_screen_pixels(sct, monitor), 1600, 900)
