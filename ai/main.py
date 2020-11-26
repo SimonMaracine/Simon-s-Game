@@ -64,13 +64,13 @@ def get_screen_pixels(sct: mss.mss, monitor: dict) -> np.array:
 
 
 def check_for_white(color: tuple) -> bool:
-    if color[0] > 210 and color[1] > 210 and color[2] > 210:
+    if color[0] > 200 and color[1] > 200 and color[2] > 200:
         return True
     else:
         return False
 
 
-def exit_program():
+def on_exit():
     print("Started on " + str(start_time))
     now = datetime.datetime.now()
     print("Now is " + str(now))
@@ -133,7 +133,7 @@ def main():
             state = State.LOOKING_FOR_HIGHLIGHT
 
     sct.close()
-    exit_program()
+    on_exit()
 
 
 if __name__ == "__main__":
