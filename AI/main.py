@@ -3,6 +3,7 @@ import datetime
 import os
 import json
 import threading
+import sys
 from typing import Optional, List
 from enum import Enum, auto
 
@@ -148,11 +149,28 @@ def dump_info_to_file(start_time_: datetime.datetime, end_time_: datetime.dateti
     print(f"Information dumped in {file_name}")
 
 
-def main():
+def main(args: list):
     global mouse, state, level_reached
 
-    print("Getting screen coordinates...")
-    width, height = get_monitor_size()
+    if len(args) < 2:
+        print("Getting screen coordinates...")
+        try:
+            width, height = get_monitor_size()
+        except screeninfo.screeninfo.ScreenInfoError:
+            print("Error getting the monitor's size; pass the resolution yourself as the program's arguments",
+                  file=sys.stderr)
+            return
+    else:
+        try:
+            width, height = int(args[1]), int(args[2])
+        except (ValueError, IndexError):
+            print("Pass two whole numbers as arguments (eg. python main.py 1600 900)", file=sys.stderr)
+            return
+
+        if width <= 0 or height <= 0:
+            print("Width or height <= 0 is invalid", file=sys.stderr)
+            return
+
     monitor = {"top": 0, "left": 0, "width": width, "height": height}
     print(f"Screen coordinates: {monitor}")
 
@@ -211,4 +229,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv)
