@@ -2,6 +2,7 @@ import time
 import datetime
 import os
 import json
+import threading
 from typing import Optional, List
 from enum import Enum, auto
 
@@ -33,18 +34,21 @@ state = State.WAITING_TO_START
 level_reached = 0
 start_time: Optional[datetime.datetime] = None
 end_time: Optional[datetime.datetime] = None
-mouse: Optional[pynput.mouse.Controller] = None
+mouse = pynput.mouse.Controller()
+wait = threading.Event()
 
 
 def keyboard_on_release(key):
     global state, running, start_time
 
     if key == pynput.keyboard.Key.esc:
-        print("Printing info, dumping info and closing the program...")
+        print("Printing and dumping information and closing the program...")
+        wait.set()
         running = False
     elif key == pynput.keyboard.Key.space:
         if state == State.WAITING_TO_START:
             print("Starting AI...")
+            wait.set()
             start_time = datetime.datetime.now()
             state = State.LOOKING_FOR_HIGHLIGHT
 
@@ -59,7 +63,7 @@ def get_window_position(pixels: np.ndarray, window_width: int, window_height: in
                             break
                 except IndexError:
                     raise RuntimeError("Bad window position; please place the game's window completely on "
-                                       "your main monitor")
+                                       "your leftmost monitor (which has the origin)")
 
                 return i, j
 
@@ -102,8 +106,8 @@ def on_exit():
         print("No information printed")
 
 
-def dump_info_to_file(monitor: dict, window_pos: tuple, pattern: List[Tile], start_time_: datetime.datetime,
-                      end_time_: datetime.datetime, level_reached_: int):
+def dump_info_to_file(start_time_: datetime.datetime, end_time_: datetime.datetime, level_reached_: int,
+                      pattern: List[Tile]):
     if state == State.WAITING_TO_START:
         print("No information dumped")
         return
@@ -121,11 +125,13 @@ def dump_info_to_file(monitor: dict, window_pos: tuple, pattern: List[Tile], sta
                 continue
             log_number = max(log_number, number + 1)
 
-    file_name = LOG_FILE_NAME + str(log_number) + ".json"
+    if log_number == 0:
+        file_name = LOG_FILE_NAME + ".json"
+    else:
+        file_name = LOG_FILE_NAME + str(log_number) + ".json"
+
     with open(file_name, "w") as file:
         data = {
-            "monitor": monitor,
-            "window_pos": window_pos,
             "start_time": str(start_time_),
             "end_time": str(end_time_),
             "delta": str(end_time_ - start_time_),
@@ -141,27 +147,27 @@ def dump_info_to_file(monitor: dict, window_pos: tuple, pattern: List[Tile], sta
 def main():
     global mouse, state, level_reached
 
+    print("Getting screen coordinates...")
     width, height = get_monitor_size()
     monitor = {"top": 0, "left": 0, "width": width, "height": height}
     print(f"Screen coordinates: {monitor}")
 
     sct = mss.mss()
 
+    print("Getting window position...")
     window_pos = get_window_position(get_screen_pixels(sct, monitor), 1600, 900)
-    print("Found program window")
-    print(f"Game window position: {window_pos}")
+    print(f"Found window position: {window_pos}")
 
-    keyboard_listener = pynput.keyboard.Listener(on_release=keyboard_on_release)
-    keyboard_listener.start()
-    mouse = pynput.mouse.Controller()
+    pynput.keyboard.Listener(on_release=keyboard_on_release).start()
 
     pattern: List[Tile] = []
     print("Starting main loop...")
     print("Press SPACE to start")
+    print("Press ESCAPE to exit")
 
     while running:
         if state == State.WAITING_TO_START:
-            pass  # There is nothing to do for now
+            wait.wait(10.0)  # There is nothing to do
         elif state == State.LOOKING_FOR_HIGHLIGHT:
             pixels = get_screen_pixels(sct, monitor)
 
@@ -197,7 +203,7 @@ def main():
 
     sct.close()
     on_exit()
-    dump_info_to_file(monitor, window_pos, pattern, start_time, end_time, level_reached)
+    dump_info_to_file(start_time, end_time, level_reached, pattern)
 
 
 if __name__ == "__main__":
