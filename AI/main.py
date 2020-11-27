@@ -120,7 +120,11 @@ def dump_info_to_file(start_time_: datetime.datetime, end_time_: datetime.dateti
         if LOG_FILE_NAME in item and ".json" in item and os.path.isfile(item):
             item = item.rstrip(".json")
             try:
-                number = int(item[6:])
+                number_string = item[6:]
+                if not number_string:
+                    number = 0
+                else:
+                    number = int(number_string)
             except ValueError:
                 continue
             log_number = max(log_number, number + 1)
