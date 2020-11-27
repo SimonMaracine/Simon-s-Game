@@ -1,5 +1,5 @@
 from random import choice
-from typing import Optional, List
+from typing import List
 from enum import Enum, auto
 from os.path import join
 from threading import Timer
@@ -9,9 +9,6 @@ import pygame
 WIDTH = 1024
 HEIGHT = 768
 TILE_WIDTH = 200
-running = True
-window: Optional[pygame.Surface] = None
-clock: Optional[pygame.time.Clock] = None
 
 
 class Color(Enum):
@@ -121,7 +118,7 @@ def blink_red():
 
 
 def main():
-    global running, window, clock, error_background
+    global error_background
 
     pygame.display.init()
     pygame.font.init()
@@ -129,6 +126,7 @@ def main():
     window = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Simon's Game")
     clock = pygame.time.Clock()
+    running = True
 
     green = Tile(WIDTH // 2 - TILE_WIDTH - 20, HEIGHT // 2 - TILE_WIDTH - 20, Color.GREEN, join("data", "green.wav"))
     red = Tile(WIDTH // 2 + 20, HEIGHT // 2 - TILE_WIDTH - 20, Color.RED, join("data", "red.wav"))
