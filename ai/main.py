@@ -12,7 +12,7 @@ import numpy as np
 from PIL import Image
 
 BACKGROUND_COLOR_OF_GAME = (20, 20, 60)
-LOG_FILE_NAME = "ai_log"
+LOG_FILE_NAME = "AI_LOG"
 
 
 class Tile(Enum):
