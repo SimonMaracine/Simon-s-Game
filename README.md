@@ -1,4 +1,4 @@
-# Simon's Game
+# Simon's Game and AI
 
 Dana gave me the idea. **Challenge accepted**.  
 Actually the original idea was only to clone this simple game. Later I got another idea: make an "AI" for it. So I did.  
