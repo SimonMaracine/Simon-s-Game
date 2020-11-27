@@ -53,9 +53,9 @@ def keyboard_on_release(key):
             state = State.LOOKING_FOR_HIGHLIGHT
 
 
-def get_window_position(pixels: np.ndarray, window_width: int, window_height: int) -> tuple:
-    for j in range(0, window_height):
-        for i in range(0, window_width):
+def get_window_position(pixels: np.ndarray, monitor_width: int, monitor_height: int) -> tuple:
+    for j in range(0, monitor_height):
+        for i in range(0, monitor_width):
             if tuple(pixels[j][i]) == BACKGROUND_COLOR_OF_GAME:
                 try:
                     for k in range(0, 1023):
@@ -155,7 +155,7 @@ def main():
     sct = mss.mss()
 
     print("Getting window position...")
-    window_pos = get_window_position(get_screen_pixels(sct, monitor), 1600, 900)
+    window_pos = get_window_position(get_screen_pixels(sct, monitor), width, height)
     print(f"Found window position: {window_pos}")
 
     pynput.keyboard.Listener(on_release=keyboard_on_release).start()
