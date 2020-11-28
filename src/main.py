@@ -146,9 +146,7 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYUP:
-                if event.key == pygame.K_ESCAPE:
-                    running = False
-                if state != GameState.IN_GAME and running is not False:
+                if state != GameState.IN_GAME:
                     start()
             elif event.type == pygame.MOUSEBUTTONUP:
                 if event.button == pygame.BUTTON_LEFT:
