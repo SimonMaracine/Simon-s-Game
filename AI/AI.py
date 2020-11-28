@@ -164,7 +164,7 @@ def main(args: list):
         try:
             width, height = int(args[1]), int(args[2])
         except (ValueError, IndexError):
-            print("Pass two whole numbers as arguments (eg. python main.py 1600 900)", file=sys.stderr)
+            print("Pass two whole numbers as arguments (eg. python AI.py 1600 900)", file=sys.stderr)
             return
 
         if width <= 0 or height <= 0:
