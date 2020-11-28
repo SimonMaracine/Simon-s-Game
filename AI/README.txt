@@ -4,5 +4,5 @@
 3. Click on the game to be in focus and press SPACE to start the game and the A.I. at the same time.
 4. Watch it go. DON'T move the mouse while in the game, because you may make the A.I. fail. Note that you need a powerful enough computer for the A.I. to work.
 
-5. If you want to, press ESCAPE to stop the A.I.. Better de-focus the game to not stop the game with the A.I..
+5. If you want to, press ESCAPE to stop the A.I..
 6. The A.I. program prints some info at the end. See it.
