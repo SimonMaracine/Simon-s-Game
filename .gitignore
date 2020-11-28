@@ -1,10 +1,11 @@
 /.idea
 /build
-/env
 /dist
+AI/build
+AI/dist
+/env
 __pycache__
-Simon\'s-Game.spec
-Simon\\'s-Game.spec
+*.spec
 Simon's-Game
 Simon-s-Game.exe
 *.json
