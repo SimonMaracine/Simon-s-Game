@@ -180,6 +180,7 @@ def main(args: list):
     print("Getting window position...")
     window_pos = get_window_position(get_screen_pixels(sct, monitor), width, height)
     print(f"Found window position: {window_pos}")
+    print("DON'T move the window now")
 
     window_portion = {"top": window_pos[1] + 164 + 200 - 20,
                       "left": window_pos[0] + 292 + 200 - 20,
