@@ -18,7 +18,8 @@ LOG_FILE_NAME = "AI_LOG"
 
 
 class Tile(Enum):
-    GREEN = (392, 264)  # These are tile positions
+    # These are the tiles' middle positions relative to the origin of the window
+    GREEN = (392, 264)
     RED = (632, 264)
     YELLOW = (392, 504)
     PURPLE = (632, 504)
@@ -79,15 +80,15 @@ def get_monitor_size() -> tuple:
     raise RuntimeError("Couldn't detect monitor size")
 
 
-def get_screen_pixels(sct: mss.mss, monitor: dict) -> np.ndarray:
-    data = sct.grab(monitor)
+def get_screen_pixels(sct: mss.mss, portion: dict) -> np.ndarray:
+    data = sct.grab(portion)
     image = Image.frombytes("RGB", (data.width, data.height), data.rgb)
     pixels = np.array(image)
     return pixels
 
 
 def check_for_white(color: np.ndarray) -> bool:
-    if color[0] > 200 and color[1] > 200 and color[2] > 200:
+    if color[0] > 180 and color[1] > 180 and color[2] > 180:
         return True
     else:
         return False
@@ -139,7 +140,7 @@ def dump_info_to_file(start_time_: datetime.datetime, end_time_: datetime.dateti
         data = {
             "start_time": str(start_time_),
             "end_time": str(end_time_),
-            "delta": str(end_time_ - start_time_),
+            "delta_time": str(end_time_ - start_time_),
             "level_reached": level_reached_,
             "pattern": [str(tile) for tile in pattern]
         }
@@ -180,6 +181,12 @@ def main(args: list):
     window_pos = get_window_position(get_screen_pixels(sct, monitor), width, height)
     print(f"Found window position: {window_pos}")
 
+    window_portion = {"top": window_pos[1] + 164 + 200 - 20,
+                      "left": window_pos[0] + 292 + 200 - 20,
+                      "width": 40 + 20 * 2,
+                      "height": 40 + 20 * 2}  # These are the coordinates for the bounding box of the screen portion
+    print(f"Capture portion of the screen: {window_portion}")
+
     pynput.keyboard.Listener(on_release=keyboard_on_release).start()
 
     pattern: List[Tile] = []
@@ -191,12 +198,12 @@ def main(args: list):
         if state == State.WAITING_TO_START:
             wait.wait(10.0)  # There is nothing to do
         elif state == State.LOOKING_FOR_HIGHLIGHT:
-            pixels = get_screen_pixels(sct, monitor)
+            pixels = get_screen_pixels(sct, window_portion)
 
-            green = pixels[window_pos[1] + Tile.GREEN.value[1], window_pos[0] + Tile.GREEN.value[0]]
-            red = pixels[window_pos[1] + Tile.RED.value[1], window_pos[0] + Tile.RED.value[0]]
-            yellow = pixels[window_pos[1] + Tile.YELLOW.value[1], window_pos[0] + Tile.YELLOW.value[0]]
-            purple = pixels[window_pos[1] + Tile.PURPLE.value[1], window_pos[0] + Tile.PURPLE.value[0]]
+            green = pixels[0][0]
+            red = pixels[0][79]
+            yellow = pixels[79][0]
+            purple = pixels[79][79]
 
             for color, tile in zip((green, red, yellow, purple), Tile):
                 if check_for_white(color):
@@ -219,7 +226,7 @@ def main(args: list):
                 else:
                     print("----- Done pattern -----")
                     level_reached += 1
-                    time.sleep(0.2)
+                    time.sleep(0.24)
 
             state = State.LOOKING_FOR_HIGHLIGHT
 
